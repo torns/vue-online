@@ -60,6 +60,7 @@ import clip from "@/utils/clipboard.js";
 import { codemirror } from "vue-codemirror";
 import "@/components/codeMirror/index.js";
 import "@/components/codeMirror/myCodeMirror.css";
+import qs from "qs";
 
 export default {
   name: "VueOnline",
@@ -119,7 +120,27 @@ export default {
       });
     },
     publish() {
-
+      this.$axios({
+        method: 'post',
+        url: '/publisher/publish',
+        data: qs.stringify({
+          code: this.code
+        })
+      })
+      .then(res => {
+        if (res.data.success) {
+          let routeUrl = this.$router.resolve({
+            path: '',
+            query: { p: res.data.p }
+          });
+          window.open(routeUrl .href, "_blank");
+        } else {
+          this.$Message.error("发布失败，请稍后重试");
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
     },
     onCmReady(cm) {
       cm.on("keypress", () => {
@@ -140,10 +161,31 @@ export default {
     }
   },
   created() {
-    //解决嵌套使用codemirror时，点击才会显示的问题。
-    setTimeout(() => {
-      this.$refs.mycodemirror.codemirror.refresh();
-    }, 1);
+    this.$axios({
+      method: 'post',
+      url: '/publisher/get_code',
+      data: qs.stringify({
+        p: this.$route.query.p
+      })
+    })
+    .then(res => {
+      if (res.data.success) {
+        this.code = res.data.code;
+        //解决嵌套使用codemirror时，点击才会显示的问题。
+        setTimeout(() => {
+          this.$refs.mycodemirror.codemirror.refresh();
+          this.run();
+        }, 100);
+      } else {
+        this.$Message.error("未获取到相关信息");
+        setTimeout(() => {
+          this.$router.push('/');
+        }, 500);
+      }
+    })
+    .catch(err => {
+      console.log(err);
+    })
   }
 }
 </script>
