@@ -161,6 +161,8 @@ export default {
     }
   },
   created() {
+    if (!this.$route.query.p)
+      return;
     this.$axios({
       method: 'post',
       url: '/publisher/get_code',
