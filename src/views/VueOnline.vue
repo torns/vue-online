@@ -129,7 +129,17 @@ export default {
       })
       .then(res => {
         if (res.data.success) {
-          window.open(window.location.origin + window.location.pathname + "?p=" + res.data.p, "_blank");
+          let url = window.location.origin + window.location.pathname + "?p=" + res.data.p;
+          try {
+            this.copyToClip(url);
+            this.$Message.success("分享链接已复制到剪贴板");
+          } catch (e) {
+            this.$Message.success("分享链接复制失败");
+            console.log(e);
+          }
+          setTimeout(() => {
+            window.open(url, "_self");
+          }, 1000);
         } else {
           this.$Message.error("发布失败，请稍后重试");
         }
@@ -142,7 +152,15 @@ export default {
       cm.on("keypress", () => {
         cm.showHint();
       });
-    }
+    },
+    copyToClip(msg) {
+      var aux = document.createElement("input");
+      aux.setAttribute("value", msg);
+      document.body.appendChild(aux);
+      aux.select();
+      document.execCommand("copy");
+      document.body.removeChild(aux);
+    },
   },
   watch: {
     $route: {
