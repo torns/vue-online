@@ -129,7 +129,7 @@ export default {
       })
       .then(res => {
         if (res.data.success) {
-          window.open(window.location.href + "?p=" + res.data.p, "_blank");
+          window.open(window.location.origin + window.location.pathname + "?p=" + res.data.p, "_blank");
         } else {
           this.$Message.error("发布失败，请稍后重试");
         }
