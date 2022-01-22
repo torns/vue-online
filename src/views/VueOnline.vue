@@ -129,11 +129,7 @@ export default {
       })
       .then(res => {
         if (res.data.success) {
-          let routeUrl = this.$router.resolve({
-            path: '',
-            query: { p: res.data.p }
-          });
-          window.open(routeUrl .href, "_blank");
+          window.open(window.location.href + "?p=" + res.data.p, "_blank");
         } else {
           this.$Message.error("发布失败，请稍后重试");
         }
